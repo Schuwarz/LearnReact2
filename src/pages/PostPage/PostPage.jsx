@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchPostById } from '@/entities/post/model/postApi';
 import { fetchCommentsByPostId } from '@/entities/comment/model/commentApi'
@@ -13,6 +13,11 @@ function PostPage() {
   const [loadingComments, setLoadingComments] = useState(false);
   const [errorComments, setErrorComments] = useState(null);
   const navigate = useNavigate();
+  const [showComments, setShowComments] = useState(false);
+  
+  const toggleComments = () => {
+    setShowComments(prev => !prev);
+  }
 
   useEffect(() => {
     const loadPost = async () => {
@@ -52,10 +57,13 @@ function PostPage() {
       <button onClick={() => navigate('/')}>На главную</button>
       <h2>{post.title}</h2>
       <p>{post.body}</p>
+      <button onClick={toggleComments}>
+        {(showComments) ? 'Скрыть' : 'Показать'}
+      </button>
 
       {loadingComments && <p>Загрузка комментариев...</p>}
       {errorComments && <p>Ошибка комментариев: {errorComments}</p>}
-      {!loadingComments && !errorComments && (<CommentList comments={comments} />)}
+      {!loadingComments && !errorComments && showComments && (<CommentList comments={comments} />)}
     </>
   );
 }
