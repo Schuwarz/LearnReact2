@@ -29,8 +29,8 @@ function PostPage() {
     const loadComment = async () => {
       setLoadingComments(true);
       try {
-        const data = await fetchCommentByPostId(id);
-        setErrorComments(data);
+        const data = await fetchCommentsByPostId(id);
+        setComments(data);
       } catch (err) {
         setErrorComments(err.message);
       } finally {
