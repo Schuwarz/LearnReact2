@@ -9,7 +9,7 @@ function AddPostForm({ posts, setPosts }) {
     e.preventDefault();
 
     if (!newTitle.trim() || !newBody.trim()) {
-      alert('Заполните оба поля!');
+      alert('Заполните все поля!');
       return;
     }
 

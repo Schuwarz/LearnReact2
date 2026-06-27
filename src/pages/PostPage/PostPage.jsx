@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchPostById } from '@/entities/post/model/postApi';
-import { fetchCommentByPostId } from '@/entities/comment/model/commentApi'
+import { fetchCommentsByPostId } from '@/entities/comment/model/commentApi'
 import CommentList from '@/entities/comment/ui/commentList';
 
 function PostPage() {
@@ -30,7 +30,7 @@ function PostPage() {
       setLoadingComments(true);
       try {
         const data = await fetchCommentByPostId(id);
-        setComment(data);
+        setErrorComments(data);
       } catch (err) {
         setErrorComments(err.message);
       } finally {

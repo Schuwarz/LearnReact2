@@ -1,4 +1,4 @@
-import commentItem from "./commentItem";
+import CommentItem from "./CommentItem";
 
 function CommentList({ comments }) {
   if (comment.length === 0) {

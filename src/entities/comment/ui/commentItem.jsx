@@ -1,4 +1,4 @@
-function commentItem({ comment }) {
+function CommentItem({ comment }) {
   return (
     <div style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
       <strong>{comment.name}</strong> <em>— {comment.email}</em>
@@ -7,4 +7,4 @@ function commentItem({ comment }) {
   );
 }
 
-export default commentItem;
+export default CommentItem;
