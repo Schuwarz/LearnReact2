@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchPostById } from '@/entities/post/model/postApi';
 import { fetchCommentsByPostId } from '@/entities/comment/model/commentApi'
-import CommentList from '@/entities/comment/ui/commentList';
+import CommentList from '@/entities/comment/ui/CommentList';
 import AddCommentForm from '@/features/add-comment/ui/AddCommentForm'
 import { setItem, STORAGE_KEYS } from '@/shared/lib/storage';
 
