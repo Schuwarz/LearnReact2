@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function AddPostForm({ posts, setPosts }) {
+function AddPostForm({ addPost }) {
   const [newTitle, setNewTitle] = useState('');
   const [newBody, setNewBody] = useState('');
   const [postAdded, setPostAdded] = useState(false);
@@ -19,7 +19,7 @@ function AddPostForm({ posts, setPosts }) {
       body: newBody,
     };
 
-    setPosts([...posts, newPost]);
+    addPost(newPost);
     setNewTitle('');
     setNewBody('');
     setPostAdded(true);
