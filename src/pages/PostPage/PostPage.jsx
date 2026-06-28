@@ -1,8 +1,10 @@
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchPostById } from '@/entities/post/model/postApi';
 import { fetchCommentsByPostId } from '@/entities/comment/model/commentApi'
 import CommentList from '@/entities/comment/ui/commentList';
+import AddCommentForm from '@/features/add-comment/ui/AddCommentForm'
+import { setItem, STORAGE_KEYS } from '@/shared/lib/storage';
 
 function PostPage() {
   const { id } = useParams(); // получаем id из URL
@@ -12,11 +14,18 @@ function PostPage() {
   const [comments, setComments] = useState([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [errorComments, setErrorComments] = useState(null);
-  const navigate = useNavigate();
   const [showComments, setShowComments] = useState(false);
+  const navigate = useNavigate();
 
   const toggleComments = () => {
     setShowComments(prev => !prev);
+  }
+
+  const addComment = (newComment) => {
+    const updatedComments = [...comments, newComment];
+    setComments(updatedComments);
+    const cacheKey = STORAGE_KEYS.COMMENTS_BY_POST(id);
+    setItem(cacheKey, updatedComments);
   }
 
   useEffect(() => {
@@ -61,9 +70,18 @@ function PostPage() {
         {(showComments) ? 'Скрыть' : 'Показать'}
       </button>
 
-      {loadingComments && <p>Загрузка комментариев...</p>}
-      {errorComments && <p>Ошибка комментариев: {errorComments}</p>}
-      {!loadingComments && !errorComments && showComments && (<CommentList comments={comments} />)}
+      {showComments && (
+        <>
+          {loadingComments && <p>Загрузка комментариев...</p>}
+          {errorComments && <p>Ошибка комментариев: {errorComments}</p>}
+          {!loadingComments && !errorComments && (
+            <>
+              <CommentList comments={comments} />
+              <AddCommentForm postId={id} onAddComment={addComment} />
+            </>
+          )}
+        </>
+      )}
     </>
   );
 }
