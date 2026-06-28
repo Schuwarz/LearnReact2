@@ -24,6 +24,8 @@ function HomePage() {
     const updatedPosts = [newPost, ...posts];
     setPosts(updatedPosts);
     setItem(STORAGE_KEYS.POSTS, updatedPosts);
+    setItem(STORAGE_KEYS.POST_BY_ID(newPost.id), newPost);
+    setItem(STORAGE_KEYS.COMMENTS_BY_POST(newPost.id), []);  // [] - пустой массив комментариев
   };
 
   if (loading) return <p>Загрузка...</p>;

@@ -14,7 +14,7 @@ function PostPage() {
   const [errorComments, setErrorComments] = useState(null);
   const navigate = useNavigate();
   const [showComments, setShowComments] = useState(false);
-  
+
   const toggleComments = () => {
     setShowComments(prev => !prev);
   }
