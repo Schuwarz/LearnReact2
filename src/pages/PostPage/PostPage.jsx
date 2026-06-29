@@ -4,7 +4,7 @@ import { fetchPostById } from '@/entities/post/model/postApi';
 import { fetchCommentsByPostId } from '@/entities/comment/model/commentApi'
 import CommentList from '@/entities/comment/ui/CommentList';
 import AddCommentForm from '@/features/add-comment/ui/AddCommentForm'
-import { setItem, STORAGE_KEYS } from '@/shared/lib/storage';
+import { setItem, STORAGE_KEYS, removePostFromCache } from '@/shared/lib/storage';
 
 function PostPage() {
   const { id } = useParams(); // получаем id из URL
@@ -23,6 +23,20 @@ function PostPage() {
 
   const addComment = (newComment) => {
     const updatedComments = [...comments, newComment];
+    setComments(updatedComments);
+    const cacheKey = STORAGE_KEYS.COMMENTS_BY_POST(id);
+    setItem(cacheKey, updatedComments);
+  }
+
+  const handlerDeletePost = () => {
+    if (window.confirm('Удалить этот пост?')) {
+      removePostFromCache(Number(id));
+      navigate('/');
+    }
+  };
+
+  const handlerDeleteComment = (commentId) => {
+    const updatedComments = comments.filter(c => c.id !== commentId);
     setComments(updatedComments);
     const cacheKey = STORAGE_KEYS.COMMENTS_BY_POST(id);
     setItem(cacheKey, updatedComments);
@@ -64,6 +78,7 @@ function PostPage() {
     <>
       <button onClick={() => navigate(-1)}>← Назад</button>
       <button onClick={() => navigate('/')}>На главную</button>
+      <button onClick={handlerDeletePost}>Удалить пост</button>
       <h2>{post.title}</h2>
       <p>{post.body}</p>
       <button onClick={toggleComments}>
@@ -76,7 +91,7 @@ function PostPage() {
           {errorComments && <p>Ошибка комментариев: {errorComments}</p>}
           {!loadingComments && !errorComments && (
             <>
-              <CommentList comments={comments} />
+              <CommentList comments={comments} onDeleteComment={handleDeleteComment} />
               <AddCommentForm postId={id} onAddComment={addComment} />
             </>
           )}

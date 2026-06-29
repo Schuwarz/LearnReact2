@@ -40,4 +40,15 @@ export function clearAllPostsCache() {
   keysToRemove.forEach(key => removeItem(key));
 }
 
+export function removePostFromCache(postId) {
+  removeItem(STORAGE_KEYS.POST_BY_ID(postId));
+  removeItem(STORAGE_KEYS.COMMENTS_BY_POST(postId));
+}
+
+export function removePostFromListCache(postId, currentPosts) {
+  const updatedPosts = currentPosts.filter(post => post.id !== postId);
+  setItem(STORAGE_KEYS.POSTS, updatedPosts);
+  return updatedPosts;
+}
+
 export { STORAGE_KEYS }

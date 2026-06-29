@@ -4,6 +4,7 @@ import AddPostForm from '@/features/add-post/ui/AddPostForm';
 import PostCard from '@/entities/post/ui/PostCard';
 import './HomePage.css';
 import { clearAllPostsCache, setItem, STORAGE_KEYS } from '@/shared/lib/storage';
+import { removePostFromCache, removePostFromListCache } from '@/shared/lib/storage';
 
 function HomePage() {
   const { posts, loading, error, setPosts } = usePosts();
@@ -27,6 +28,12 @@ function HomePage() {
     setItem(STORAGE_KEYS.POST_BY_ID(newPost.id), newPost);
     setItem(STORAGE_KEYS.COMMENTS_BY_POST(newPost.id), []);  // [] - пустой массив комментариев
   };
+
+  const handlerDeletePost = (postId) => {
+    const updatedPosts = removePostFromListCache(postId, posts);
+    setPosts(updatedPosts);
+    removePostFromCache(postId);
+  }
 
   if (loading) return <p>Загрузка...</p>;
   if (error) return <p>Ошибка: {error}</p>;
@@ -57,7 +64,12 @@ function HomePage() {
         <button onClick={handlerClearCache}>Очистить кеш</button>
       </div>
       <ul>
-        {sortedPosts.map(post => <PostCard key={post.id} post={post} />)}
+        {sortedPosts.map(post => (
+          <PostCard
+            key={post.id}
+            post={post}
+            onDelete={handleDeletePost} />
+        ))}
       </ul>
     </>
   );

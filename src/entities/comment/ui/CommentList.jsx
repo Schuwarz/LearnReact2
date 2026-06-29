@@ -1,6 +1,6 @@
 import CommentItem from "./CommentItem";
 
-function CommentList({ comments }) {
+function CommentList({ comments, onDeleteComment }) {
   if (comments.length === 0) {
     return <p>Комментариев нет</p>;
   }
@@ -8,7 +8,13 @@ function CommentList({ comments }) {
   return (
     <div>
       <h3>Комментарии</h3>
-      {comments.map(comment => <CommentItem key={comment.id} comment={comment} />)}
+      {comments.map(comment => (
+        <CommentItem
+          key={comment.id}
+          comment={comment}
+          onDelete={onDeleteComment}
+        />
+      ))}
     </div>
   );
 }
