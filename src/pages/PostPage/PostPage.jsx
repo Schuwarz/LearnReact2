@@ -91,7 +91,7 @@ function PostPage() {
           {errorComments && <p>Ошибка комментариев: {errorComments}</p>}
           {!loadingComments && !errorComments && (
             <>
-              <CommentList comments={comments} onDeleteComment={handleDeleteComment} />
+              <CommentList comments={comments} onDeleteComment={handlerDeleteComment} />
               <AddCommentForm postId={id} onAddComment={addComment} />
             </>
           )}

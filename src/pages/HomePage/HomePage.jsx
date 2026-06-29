@@ -68,7 +68,7 @@ function HomePage() {
           <PostCard
             key={post.id}
             post={post}
-            onDelete={handleDeletePost} />
+            onDelete={handlerDeletePost} />
         ))}
       </ul>
     </>
