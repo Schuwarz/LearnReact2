@@ -70,12 +70,12 @@ function PostPage() {
     loadComment();
   }, [id]);
 
-  if (loadingPost) return <p>Загрузка...</p>;
-  if (errorPost) return <p>Ошибка: {errorPost}</p>;
-  if (!post) return <p>Пост не найден</p>;
+  if (loadingPost) return <p className='text-center text-gray-500 dark:text-gray-400'>Загрузка...</p>;
+  if (errorPost) return <p className='text-center text-red-500'>Ошибка: {errorPost}</p>;
+  if (!post) return <p className='text-center text-gray-500 dark:text-gray-400'>Пост не найден</p>;
 
   return (
-    <>
+    <div>
       <div className="flex flex-wrap gap-3 mb-6">
         <button
           onClick={() => navigate(-1)}
@@ -103,8 +103,12 @@ function PostPage() {
 
       {showComments && (
         <>
-          {loadingComments && <p>Загрузка комментариев...</p>}
-          {errorComments && <p>Ошибка комментариев: {errorComments}</p>}
+          {loadingComments && (
+            <p className='text-gray-500 dark:text-gray-400 mt-4'>Загрузка комментариев...</p>
+          )}
+          {errorComments && (
+            <p className='text-red-500 mt-4'>Ошибка комментариев: {errorComments}</p>
+          )}
           {!loadingComments && !errorComments && (
             <>
               <CommentList comments={comments} onDeleteComment={handlerDeleteComment} />
@@ -113,7 +117,7 @@ function PostPage() {
           )}
         </>
       )}
-    </>
+    </div>
   );
 }
 

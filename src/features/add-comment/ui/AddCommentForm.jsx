@@ -27,29 +27,39 @@ function AddCommentForm({ postId, onAddComment }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-200 dark:bprder-gray-700 mt-6 space-y-3"
+    >
+      <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">Добавить комментарий</h4>
+
       <input
         type="text"
         placeholder='Имя'
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className='form__input'
+        className='w-full px-4 py-2 border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none'
       />
       <input
         type='email'
         placeholder='Почта'
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className='form__input'
+        className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none'
       />
       <textarea
-        rows="3"
+        rows={3}
         placeholder="Напишите комментарий..."
         value={text}
         onChange={(e) => setText(e.target.value)}
-        className='form__input'
+        className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none'
       />
-      <button type="submit">Отправить</button>
+      <button
+        type="submit"
+        className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition'
+      >
+        Отправить
+      </button>
     </form>
   );
 }
