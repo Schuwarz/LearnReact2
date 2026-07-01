@@ -64,38 +64,40 @@ function HomePage() {
         LoremBook
       </h1>
       <AddPostForm addPost={addPost} />
-      <input
-        type="text"
-        placeholder='Поиск по заголовку...'
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full sm:flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-      />
-      <div className="flex gap-2">
-        <button
-          className={`px-3 py-1 rounded-md transition ${sortType === 'title' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
-          onClick={() => setSortType('title')}
-        >
-          По названию
-        </button>
-        <button
-          className={`px-3 py-1 rounded-md transition ${sortType === 'id' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
-          onClick={() => setSortType('id')}
-        >
-          По ID
-        </button>
-        <button
-          onClick={handleReset}
-          className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md transition"
-        >
-          Сброс
-        </button>
-        <button
-          onClick={handlerClearCache}
-          className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition"
-        >
-          Очистить кеш
-        </button>
+      <div className='bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6 space-y-3'>
+        <input
+          type="text"
+          placeholder='Поиск по заголовку...'
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full sm:flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        />
+        <div className="flex gap-2">
+          <button
+            className={`px-3 py-1 rounded-md transition ${sortType === 'title' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+            onClick={() => setSortType('title')}
+          >
+            По названию
+          </button>
+          <button
+            className={`px-3 py-1 rounded-md transition ${sortType === 'id' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+            onClick={() => setSortType('id')}
+          >
+            По ID
+          </button>
+          <button
+            onClick={handleReset}
+            className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md transition"
+          >
+            Сброс
+          </button>
+          <button
+            onClick={handlerClearCache}
+            className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition"
+          >
+            Очистить кеш
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
