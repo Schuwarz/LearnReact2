@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import "./HelloReact.css";
 
 function HelloReact() {
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*";
@@ -50,9 +49,15 @@ function HelloReact() {
   }, []);
 
   return (
-    <div id="helloReact__container">
+    <div className='flex justify-center items-center p-5'>
       <h1
-        id="helloReact"
+        className='font-mono uppercase cursor-pointer px-10 py-5 m-0 rounded-lg transition-all duration-300 
+        text-4xl sm:text-6xl lg:text-7xl 
+        text-gray-900 dark:text-gray-100 
+        bg-white dark:bg-gray-900 
+        border border-gray-200 dark:border-gray-700 
+        shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+        hover:bg-purple-600 hover:text-white hover:border-purple-600 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]'
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >

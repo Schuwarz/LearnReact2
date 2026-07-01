@@ -76,12 +76,28 @@ function PostPage() {
 
   return (
     <>
-      <button onClick={() => navigate(-1)}>← Назад</button>
-      <button onClick={() => navigate('/')}>На главную</button>
-      <button onClick={handlerDeletePost}>Удалить пост</button>
-      <h2>{post.title}</h2>
-      <p>{post.body}</p>
-      <button onClick={toggleComments}>
+      <div className="flex flex-wrap gap-3 mb-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-md transition"
+        >
+          ← Назад
+        </button>
+        <button
+          onClick={handlerDeletePost}
+          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition"
+        >
+          Удалить пост
+        </button>
+      </div>
+
+      <h2 className="text-2xl md:text-3xl font-bold mb-3">{post.title}</h2>
+      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">{post.body}</p>
+
+      <button
+        onClick={toggleComments}
+        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition mb-4"
+      >
         {(showComments) ? 'Скрыть' : 'Показать'}
       </button>
 
