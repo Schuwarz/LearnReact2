@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePosts } from '@/features/post-list/model/usePosts';
 import AddPostForm from '@/features/add-post/ui/AddPostForm';
 import PostCard from '@/entities/post/ui/PostCard';
@@ -10,6 +10,7 @@ function HomePage() {
   const { posts, loading, error, setPosts } = usePosts();
   const [search, setSearch] = useState('');
   const [sortType, setSortType] = useState('id');
+  const searchInputRef = useRef(null);
 
   const filteredPosts = posts.filter(post =>
     post.title.toLowerCase().includes(search.toLowerCase())
@@ -29,6 +30,12 @@ function HomePage() {
   useEffect(() => {
     goToPage(1);
   }, [search, sortType]);
+
+  useEffect(() => {
+    if (!loading) {
+      searchInputRef.current?.focus();
+    }
+  }, [loading]);
 
   if (loading) return <p>Загрузка...</p>;
   if (error) return <p>Ошибка: {error}</p>;
@@ -66,6 +73,7 @@ function HomePage() {
       <AddPostForm addPost={addPost} />
       <div className='bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6 space-y-3'>
         <input
+          ref={searchInputRef}
           type="text"
           placeholder='Поиск по заголовку...'
           value={search}

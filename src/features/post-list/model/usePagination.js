@@ -4,7 +4,7 @@ export function usePagination(totalItems, initialLimit = 10) {
   const [limit, setLimit] = useState(initialLimit);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(totalItems / limit);
+  const totalPages = Math.max(1, Math.ceil(totalItems / limit));
 
   const goToPage = (page) => {
     const newPage = Math.min(Math.max(1, page), totalPages);

@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 function AddCommentForm({ postId, onAddComment }) {
   const [text, setText] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const nameInputRef = useRef(null);
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,6 +28,10 @@ function AddCommentForm({ postId, onAddComment }) {
     setEmail('');
   };
 
+  useEffect(() => {
+    nameInputRef.current?.focus({ preventScroll: true });
+  }, []);
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -34,6 +40,7 @@ function AddCommentForm({ postId, onAddComment }) {
       <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">Добавить комментарий</h4>
 
       <input
+        ref={nameInputRef}
         type="text"
         placeholder='Имя'
         value={name}
