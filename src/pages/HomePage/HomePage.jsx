@@ -5,15 +5,16 @@ import PostCard from '@/entities/post/ui/PostCard';
 import { clearAllPostsCache, setItem, STORAGE_KEYS } from '@/shared/lib/storage';
 import { removePostFromCache, removePostFromListCache } from '@/shared/lib/storage';
 import { usePagination } from '@/features/post-list/model/usePagination';
+import { useInput } from '@/shared/lib/hooks/useInput'
 
 function HomePage() {
   const { posts, loading, error, setPosts } = usePosts();
-  const [search, setSearch] = useState('');
+  const search = useInput('');
   const [sortType, setSortType] = useState('id');
   const searchInputRef = useRef(null);
 
   const filteredPosts = posts.filter(post =>
-    post.title.toLowerCase().includes(search.toLowerCase())
+    post.title.toLowerCase().includes(search.value.toLowerCase())
   );
 
   const sortedPosts = [...filteredPosts].sort((a, b) => {
@@ -29,7 +30,7 @@ function HomePage() {
 
   useEffect(() => {
     goToPage(1);
-  }, [search, sortType]);
+  }, [search.value, sortType]);
 
   useEffect(() => {
     if (!loading) {
@@ -47,7 +48,7 @@ function HomePage() {
   }
 
   const handleReset = () => {
-    setSearch('');
+    search.reset();
     setSortType('id');
   };
 
@@ -76,10 +77,11 @@ function HomePage() {
           ref={searchInputRef}
           type="text"
           placeholder='Поиск по заголовку...'
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          value={search.value}
+          onChange={search.onChange}
           className="w-full sm:flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
         />
+        <button onClick={() => console.log(search.value)}>ТЕСТ</button>
         <div className="flex gap-2">
           <button
             className={`px-3 py-1 rounded-md transition ${sortType === 'title' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
