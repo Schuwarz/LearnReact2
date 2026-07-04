@@ -13,6 +13,12 @@ function HomePage() {
   const [sortType, setSortType] = useState('id');
   const searchInputRef = useRef(null);
 
+  // ##### ПОЛИГОН ЗОНА 67 #####
+
+
+
+  // ##### ПОЛИГОН ЗОНА 67 #####
+
   const filteredPosts = posts.filter(post =>
     post.title.toLowerCase().includes(search.value.toLowerCase())
   );
@@ -68,9 +74,6 @@ function HomePage() {
 
   return (
     <>
-      <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">
-        LoremBook
-      </h1>
       <AddPostForm addPost={addPost} />
       <div className='bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6 space-y-3'>
         <input
