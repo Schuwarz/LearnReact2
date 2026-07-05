@@ -83,7 +83,6 @@ function HomePage() {
           onChange={search.onChange}
           className="w-full sm:flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
         />
-        <button onClick={() => console.log(search.value)}>ТЕСТ</button>
         <div className="flex gap-2">
           <button
             className={`px-3 py-1 rounded-md transition ${sortType === 'title' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
