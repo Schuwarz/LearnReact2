@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+// ##### ПОЛИГОН ЗОНА 67 #####
+
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { usePosts } from '@/features/post-list/model/usePosts';
 import AddPostForm from '@/features/add-post/ui/AddPostForm';
 import PostCard from '@/entities/post/ui/PostCard';
@@ -13,26 +15,49 @@ function HomePage() {
   const [sortType, setSortType] = useState('id');
   const searchInputRef = useRef(null);
 
-  // ##### ПОЛИГОН ЗОНА 67 #####
+  const filteredPosts = useMemo(() => {
+    return posts.filter((post) =>
+      post.title.toLowerCase().includes(search.value.toLowerCase())
+    );
+  }, [posts, search.value]);
 
-
-
-  // ##### ПОЛИГОН ЗОНА 67 #####
-
-  const filteredPosts = posts.filter(post =>
-    post.title.toLowerCase().includes(search.value.toLowerCase())
-  );
-
-  const sortedPosts = [...filteredPosts].sort((a, b) => {
-    if (sortType === 'id') return a.id - b.id
-    if (sortType === 'title') return a.title.localeCompare(b.title);
-    return 0;
-  });
+  const sortedPosts = useMemo(() => {
+    return [...filteredPosts].sort((a, b) => {
+      if (sortType === 'id') return a.id - b.id
+      if (sortType === 'title') return a.title.localeCompare(b.title);
+      return 0;
+    });
+  }, [filteredPosts, sortType]);
 
   const { currentPage, totalPages, limit, setLimit, nextPage, prevPage, getCurrentItems, goToPage } =
     usePagination(sortedPosts.length);
 
   const currentPosts = getCurrentItems(sortedPosts);
+
+  const handlerDeletePost = useCallback((postId) => {
+    const updatedPosts = removePostFromListCache(postId, posts);
+    setPosts(updatedPosts);
+    removePostFromCache(postId);
+  }, [posts]);
+
+  const addPost = useCallback((newPost) => {
+    const updatedPosts = [newPost, ...posts];
+    setPosts(updatedPosts);
+    setItem(STORAGE_KEYS.POSTS, updatedPosts);
+    setItem(STORAGE_KEYS.POST_BY_ID(newPost.id), newPost);
+    setItem(STORAGE_KEYS.COMMENTS_BY_POST(newPost.id), []);  // [] - пустой массив комментариев
+    goToPage(1);
+  }, [posts]);
+
+  const handleReset = () => {
+    search.reset();
+    setSortType('id');
+  };
+
+  const handlerClearCache = () => {
+    clearAllPostsCache();
+    alert('Кеш очищен. Перезагрузите страницу, чтобы получить свежие данные');
+  };
 
   useEffect(() => {
     goToPage(1);
@@ -46,32 +71,6 @@ function HomePage() {
 
   if (loading) return <p>Загрузка...</p>;
   if (error) return <p>Ошибка: {error}</p>;
-
-  const handlerDeletePost = (postId) => {
-    const updatedPosts = removePostFromListCache(postId, posts);
-    setPosts(updatedPosts);
-    removePostFromCache(postId);
-  }
-
-  const handleReset = () => {
-    search.reset();
-    setSortType('id');
-  };
-
-  const handlerClearCache = () => {
-    clearAllPostsCache();
-    alert('Кеш очищен. Перезагрузите страницу, чтобы получить свежие данные');
-  };
-
-  const addPost = (newPost) => {
-    const updatedPosts = [newPost, ...posts];
-    setPosts(updatedPosts);
-    setItem(STORAGE_KEYS.POSTS, updatedPosts);
-    setItem(STORAGE_KEYS.POST_BY_ID(newPost.id), newPost);
-    setItem(STORAGE_KEYS.COMMENTS_BY_POST(newPost.id), []);  // [] - пустой массив комментариев
-    goToPage(1);
-  };
-
   return (
     <>
       <AddPostForm addPost={addPost} />

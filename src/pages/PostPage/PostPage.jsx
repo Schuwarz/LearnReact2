@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchPostById } from '@/entities/post/model/postApi';
 import { fetchCommentsByPostId } from '@/entities/comment/model/commentApi'
@@ -21,12 +21,12 @@ function PostPage() {
     setShowComments(prev => !prev);
   }
 
-  const addComment = (newComment) => {
+  const addComment = useCallback((newComment) => {
     const updatedComments = [...comments, newComment];
     setComments(updatedComments);
     const cacheKey = STORAGE_KEYS.COMMENTS_BY_POST(id);
     setItem(cacheKey, updatedComments);
-  }
+  }, [comments, id]);
 
   const handlerDeletePost = () => {
     if (window.confirm('Удалить этот пост?')) {
@@ -35,12 +35,12 @@ function PostPage() {
     }
   };
 
-  const handlerDeleteComment = (commentId) => {
+  const handlerDeleteComment = useCallback((commentId) => {
     const updatedComments = comments.filter(c => c.id !== commentId);
     setComments(updatedComments);
     const cacheKey = STORAGE_KEYS.COMMENTS_BY_POST(id);
     setItem(cacheKey, updatedComments);
-  }
+  }, [comments, id]);
 
   useEffect(() => {
     const loadPost = async () => {

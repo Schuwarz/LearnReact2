@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 function CommentItem({ comment, onDelete }) {
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-3 bg-white dark:bg-gray-800 hover:shadow-sm transition">
@@ -18,4 +20,4 @@ function CommentItem({ comment, onDelete }) {
   );
 }
 
-export default CommentItem;
+export default memo(CommentItem);
