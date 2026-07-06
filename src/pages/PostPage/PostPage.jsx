@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchPostById } from '@/entities/post/model/postApi';
+import { usePostStore } from '@/shared/lib/store/postStore';
 import { fetchCommentsByPostId } from '@/entities/comment/model/commentApi'
 import CommentList from '@/entities/comment/ui/CommentList';
 import AddCommentForm from '@/features/add-comment/ui/AddCommentForm'
-import { setItem, STORAGE_KEYS, removePostFromCache } from '@/shared/lib/storage';
+import { setItem, STORAGE_KEYS, getItem } from '@/shared/lib/storage';
 
 function PostPage() {
-  const { id } = useParams(); // получаем id из URL
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { getPostById, fetchPostById, deletePost } = usePostStore();
   const [post, setPost] = useState(null);
   const [loadingPost, setLoadingPost] = useState(true);
   const [errorPost, setErrorPost] = useState(null);
@@ -15,38 +17,18 @@ function PostPage() {
   const [loadingComments, setLoadingComments] = useState(false);
   const [errorComments, setErrorComments] = useState(null);
   const [showComments, setShowComments] = useState(false);
-  const navigate = useNavigate();
-
-  const toggleComments = () => {
-    setShowComments(prev => !prev);
-  }
-
-  const addComment = useCallback((newComment) => {
-    const updatedComments = [...comments, newComment];
-    setComments(updatedComments);
-    const cacheKey = STORAGE_KEYS.COMMENTS_BY_POST(id);
-    setItem(cacheKey, updatedComments);
-  }, [comments, id]);
-
-  const handlerDeletePost = () => {
-    if (window.confirm('Удалить этот пост?')) {
-      removePostFromCache(Number(id));
-      navigate('/');
-    }
-  };
-
-  const handlerDeleteComment = useCallback((commentId) => {
-    const updatedComments = comments.filter(c => c.id !== commentId);
-    setComments(updatedComments);
-    const cacheKey = STORAGE_KEYS.COMMENTS_BY_POST(id);
-    setItem(cacheKey, updatedComments);
-  }, [comments, id]);
 
   useEffect(() => {
     const loadPost = async () => {
       try {
-        const data = await fetchPostById(id);
-        setPost(data);
+        const data = getPostById(+id);
+        if (data) {
+          setPost(data);
+          setLoadingPost(false);
+          return;
+        }
+        const postData = await fetchPostById(+id);
+        setPost(postData);
       } catch (err) {
         setErrorPost(err.message);
       } finally {
@@ -57,8 +39,15 @@ function PostPage() {
     const loadComment = async () => {
       setLoadingComments(true);
       try {
-        const data = await fetchCommentsByPostId(id);
+        const cached = getItem(STORAGE_KEYS.COMMENTS_BY_POST(+id));
+        if (cached) {
+          setComments(cached);
+          setLoadingComments(false);
+          return;
+        }
+        const data = await fetchCommentsByPostId(+id);
         setComments(data);
+        setItem(STORAGE_KEYS.COMMENTS_BY_POST(+id), data);
       } catch (err) {
         setErrorComments(err.message);
       } finally {
@@ -68,7 +57,30 @@ function PostPage() {
 
     loadPost();
     loadComment();
-  }, [id]);
+  }, [id, getPostById]);
+
+  const toggleComments = () => {
+    setShowComments(prev => !prev);
+  };
+
+  const handlerAddComment = useCallback((newComment) => {
+    const updated = [...comments, newComment];
+    setComments(updated);
+    setItem(STORAGE_KEYS.COMMENTS_BY_POST(+id), updated);
+  }, [comments, id]);
+
+  const handlerDeleteComment = useCallback((commentId) => {
+    const updated = comments.filter(c => c.id !== commentId);
+    setComments(updated);
+    setItem(STORAGE_KEYS.COMMENTS_BY_POST(+id), updated);
+  }, [comments, id]);
+
+  const handlerDeletePost = useCallback(() => {
+    if (window.confirm('Удалить этот пост?')) {
+      deletePost(+id);
+      navigate('/');
+    }
+  }, [deletePost, id, navigate]);
 
   if (loadingPost) return <p className='text-center text-gray-500 dark:text-gray-400'>Загрузка...</p>;
   if (errorPost) return <p className='text-center text-red-500'>Ошибка: {errorPost}</p>;
@@ -112,7 +124,7 @@ function PostPage() {
           {!loadingComments && !errorComments && (
             <>
               <CommentList comments={comments} onDeleteComment={handlerDeleteComment} />
-              <AddCommentForm postId={id} onAddComment={addComment} />
+              <AddCommentForm postId={id} onAddComment={handlerAddComment} />
             </>
           )}
         </>

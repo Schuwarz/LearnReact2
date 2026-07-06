@@ -1,16 +1,12 @@
-// ##### ПОЛИГОН ЗОНА 67 #####
-
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { usePosts } from '@/features/post-list/model/usePosts';
+import { usePostStore } from '@/shared/lib/store/postStore';
+import { useInput } from '@/shared/lib/hooks/useInput'
+import { usePagination } from '@/features/post-list/model/usePagination';
 import AddPostForm from '@/features/add-post/ui/AddPostForm';
 import PostCard from '@/entities/post/ui/PostCard';
-import { clearAllPostsCache, setItem, STORAGE_KEYS } from '@/shared/lib/storage';
-import { removePostFromCache, removePostFromListCache } from '@/shared/lib/storage';
-import { usePagination } from '@/features/post-list/model/usePagination';
-import { useInput } from '@/shared/lib/hooks/useInput'
 
 function HomePage() {
-  const { posts, loading, error, setPosts } = usePosts();
+  const { posts, loading, error, fetchPosts, addPost, deletePost, clearCache } = usePostStore();
   const search = useInput('');
   const [sortType, setSortType] = useState('id');
   const searchInputRef = useRef(null);
@@ -31,33 +27,11 @@ function HomePage() {
 
   const { currentPage, totalPages, limit, setLimit, nextPage, prevPage, getCurrentItems, goToPage } =
     usePagination(sortedPosts.length);
-
   const currentPosts = getCurrentItems(sortedPosts);
 
-  const handlerDeletePost = useCallback((postId) => {
-    const updatedPosts = removePostFromListCache(postId, posts);
-    setPosts(updatedPosts);
-    removePostFromCache(postId);
-  }, [posts]);
-
-  const addPost = useCallback((newPost) => {
-    const updatedPosts = [newPost, ...posts];
-    setPosts(updatedPosts);
-    setItem(STORAGE_KEYS.POSTS, updatedPosts);
-    setItem(STORAGE_KEYS.POST_BY_ID(newPost.id), newPost);
-    setItem(STORAGE_KEYS.COMMENTS_BY_POST(newPost.id), []);  // [] - пустой массив комментариев
-    goToPage(1);
-  }, [posts]);
-
-  const handleReset = () => {
-    search.reset();
-    setSortType('id');
-  };
-
-  const handlerClearCache = () => {
-    clearAllPostsCache();
-    alert('Кеш очищен. Перезагрузите страницу, чтобы получить свежие данные');
-  };
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   useEffect(() => {
     goToPage(1);
@@ -69,11 +43,31 @@ function HomePage() {
     }
   }, [loading]);
 
-  if (loading) return <p>Загрузка...</p>;
-  if (error) return <p>Ошибка: {error}</p>;
+  const handlerDeletePost = useCallback((postId) => {
+    deletePost(postId);
+  }, [deletePost]);
+
+  const handlerAddPost = useCallback((newPost) => {
+    addPost(newPost);
+    goToPage(1);
+  }, [addPost]);
+
+  const handlerClearCache = useCallback(() => {
+    clearCache();
+    alert('Каке очищен');
+  }, [clearCache]);
+
+  const handleReset = useCallback(() => {
+    search.reset();
+    setSortType('id');
+  }, [search]);
+
+  if (loading) return <p className="text-center">Загрузка...</p>;
+  if (error) return <p className="text-center text-red-500">Ошибка: {error}</p>;
+
   return (
     <>
-      <AddPostForm addPost={addPost} />
+      <AddPostForm addPost={handlerAddPost} />
       <div className='bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6 space-y-3'>
         <input
           ref={searchInputRef}

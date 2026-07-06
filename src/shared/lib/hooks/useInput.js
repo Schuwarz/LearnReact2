@@ -1,3 +1,5 @@
+// Папку с hooks -> dom
+
 import { useState } from 'react';
 
 export function useInput(initialValue) {
