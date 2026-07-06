@@ -1,5 +1,5 @@
 import { useTheme } from '@/shared/lib/context/ThemeContext';
-import HelloReact from '@/app/components/HelloReact';
+import HelloReact from '@/app/ui/HelloReact';
 
 function Layout({ children }) {
   const { theme, toggleTheme } = useTheme();

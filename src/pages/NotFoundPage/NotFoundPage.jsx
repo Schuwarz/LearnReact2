@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function NotFoundPage() {
   return (
     <div className="text-center py-20">

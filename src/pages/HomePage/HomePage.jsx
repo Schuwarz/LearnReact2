@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { usePostStore } from '@/shared/lib/store/postStore';
-import { useInput } from '@/shared/lib/hooks/useInput'
+import { useInput } from '@/shared/lib/dom/useInput'
 import { usePagination } from '@/features/post-list/model/usePagination';
 import AddPostForm from '@/features/add-post/ui/AddPostForm';
 import PostCard from '@/entities/post/ui/PostCard';
@@ -54,7 +54,7 @@ function HomePage() {
 
   const handlerClearCache = useCallback(() => {
     clearCache();
-    alert('Каке очищен');
+    alert('Кеш очищен');
   }, [clearCache]);
 
   const handleReset = useCallback(() => {
