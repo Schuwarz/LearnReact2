@@ -1,8 +1,13 @@
 import { create } from "zustand";
-import { fetchPosts as apiFetchPosts } from '@/entities/post/model/postApi';
+import { fetchPosts as apiFetchPosts, fetchPostById as apiFetchPostById } from '@/entities/post/model/postApi';
 import { setItem, getItem, STORAGE_KEYS } from '@/shared/lib/storage';
 
 const syncWithLocalStorage = (posts) => {
+  if (!Array.isArray(posts)) {
+    console.error('❌ syncWithLocalStorage ожидает массив, получен:', posts);
+    return; // ничего не сохраняем, чтобы не испортить кеш
+  }
+
   setItem(STORAGE_KEYS.POSTS, posts);
   posts.forEach(post => {
     setItem(STORAGE_KEYS.POST_BY_ID(post.id), post);
@@ -33,17 +38,16 @@ export const usePostStore = create((set, get) => ({
 
   fetchPostById: async (id) => {
     const cached = getItem(STORAGE_KEYS.POST_BY_ID(id));
-    if (cached) {
-      return cached;
-    }
+    if (cached) return cached;
+
     const existing = get().posts.find(p => p.id === id);
     if (existing) {
       setItem(STORAGE_KEYS.POST_BY_ID(id), existing);
       return existing;
     }
-    const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`);
-    if (!res.ok) throw new Error('Пост не найден');
-    const data = await res.json();
+
+    const data = await apiFetchPostsById(id);
+
     setItem(STORAGE_KEYS.POST_BY_ID(id), data);
     set((state) => {
       if (!state.posts.some(p => p.id === id)) {
@@ -71,10 +75,11 @@ export const usePostStore = create((set, get) => ({
   },
 
   clearCache: () => {
+    const currentState = get();
     const keys = [
       STORAGE_KEYS.POSTS,
-      ...state.posts.map(post => STORAGE_KEYS.POST_BY_ID(post.id)),
-      ...state.posts.map(post => STORAGE_KEYS.COMMENTS_BY_POST(post.id)),
+      ...currentState.posts.map(post => STORAGE_KEYS.POST_BY_ID(post.id)),
+      ...currentState.posts.map(post => STORAGE_KEYS.COMMENTS_BY_POST(post.id)),
     ];
     keys.forEach(key => localStorage.removeItem(key));
     set({ posts: [] });
