@@ -19,6 +19,7 @@ export const usePostStore = create((set, get) => ({
   posts: [],
   loading: false,
   error: null,
+  cacheVersion: 0,
 
   fetchPosts: async () => {
     set({ loading: true, error: null });
@@ -37,25 +38,31 @@ export const usePostStore = create((set, get) => ({
   },
 
   fetchPostById: async (id) => {
-    const cached = getItem(STORAGE_KEYS.POST_BY_ID(id));
-    if (cached) return cached;
+    try {
+      const cached = getItem(STORAGE_KEYS.POST_BY_ID(id));
+      if (cached) return cached;
 
-    const existing = get().posts.find(p => p.id === id);
-    if (existing) {
-      setItem(STORAGE_KEYS.POST_BY_ID(id), existing);
-      return existing;
-    }
-
-    const data = await apiFetchPostsById(id);
-
-    setItem(STORAGE_KEYS.POST_BY_ID(id), data);
-    set((state) => {
-      if (!state.posts.some(p => p.id === id)) {
-        return { posts: [...state.posts, data] };
+      const existing = get().posts.find(p => p.id === id);
+      if (existing) {
+        setItem(STORAGE_KEYS.POST_BY_ID(id), existing);
+        return existing;
       }
-      return state;
-    });
-    return data;
+
+      const data = await apiFetchPostById(id);
+
+      setItem(STORAGE_KEYS.POST_BY_ID(id), data);
+      set((state) => {
+        if (!state.posts.some(p => p.id === id)) {
+          return { posts: [...state.posts, data] };
+        }
+        return state;
+      });
+      return data;
+
+    } catch (error) {
+      set({ error: error.message });
+      throw error;
+    }
   },
 
   addPost: (newPost) => {
@@ -82,7 +89,17 @@ export const usePostStore = create((set, get) => ({
       ...currentState.posts.map(post => STORAGE_KEYS.COMMENTS_BY_POST(post.id)),
     ];
     keys.forEach(key => localStorage.removeItem(key));
-    set({ posts: [] });
+
+    const commentKeys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('comments_post_')) {
+        commentKeys.push(key);
+      }
+    }
+    commentKeys.forEach(key => localStorage.removeItem(key));
+    
+    set({ posts: [], cacheVersion: get().cacheVersion + 1 });
   },
 
   getPostById: (id) => {

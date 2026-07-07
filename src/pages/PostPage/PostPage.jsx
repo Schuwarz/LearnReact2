@@ -9,7 +9,7 @@ import { setItem, STORAGE_KEYS, getItem } from '@/shared/lib/storage';
 function PostPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getPostById, fetchPostById, deletePost } = usePostStore();
+  const { getPostById, fetchPostById, deletePost, cacheVersion } = usePostStore();
   const [post, setPost] = useState(null);
   const [loadingPost, setLoadingPost] = useState(true);
   const [errorPost, setErrorPost] = useState(null);
@@ -18,7 +18,11 @@ function PostPage() {
   const [errorComments, setErrorComments] = useState(null);
   const [showComments, setShowComments] = useState(false);
 
+
   useEffect(() => {
+    setComments([]);
+    setLoadingComments(true);
+
     const loadPost = async () => {
       try {
         const data = getPostById(+id);
@@ -39,15 +43,8 @@ function PostPage() {
     const loadComment = async () => {
       setLoadingComments(true);
       try {
-        const cached = getItem(STORAGE_KEYS.COMMENTS_BY_POST(+id));
-        if (cached) {
-          setComments(cached);
-          setLoadingComments(false);
-          return;
-        }
         const data = await fetchCommentsByPostId(+id);
         setComments(data);
-        setItem(STORAGE_KEYS.COMMENTS_BY_POST(+id), data);
       } catch (err) {
         setErrorComments(err.message);
       } finally {
@@ -57,7 +54,8 @@ function PostPage() {
 
     loadPost();
     loadComment();
-  }, [id, getPostById]);
+    testFetch();
+  }, [id, getPostById, cacheVersion]);
 
   const toggleComments = () => {
     setShowComments(prev => !prev);
