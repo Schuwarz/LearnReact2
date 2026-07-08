@@ -54,7 +54,6 @@ function PostPage() {
 
     loadPost();
     loadComment();
-    testFetch();
   }, [id, getPostById, cacheVersion]);
 
   const toggleComments = () => {
