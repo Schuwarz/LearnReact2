@@ -7,10 +7,11 @@ import PostCard from '@/entities/post/ui/PostCard';
 import { usePosts } from '@/features/post-list/model/usePosts';
 
 function HomePage() {
-  const { posts, loading, error, fetchPosts, addPost, deletePost, clearCache } = usePostStore();
   const search = useInput('');
   const [sortType, setSortType] = useState('id');
   const searchInputRef = useRef(null);
+  const { addPost, deletePost, clearCache } = usePostStore();
+  const { data: posts = [], isLoading, error, isError } = usePosts();
 
   const filteredPosts = useMemo(() => {
     return posts.filter((post) =>
@@ -31,18 +32,14 @@ function HomePage() {
   const currentPosts = getCurrentItems(sortedPosts);
 
   useEffect(() => {
-    fetchPosts();
-  }, [fetchPosts]);
-
-  useEffect(() => {
     goToPage(1);
   }, [search.value, sortType]);
 
   useEffect(() => {
-    if (!loading) {
+    if (!isLoading) {
       searchInputRef.current?.focus();
     }
-  }, [loading]);
+  }, [isLoading]);
 
   const handlerDeletePost = useCallback((postId) => {
     deletePost(postId);
@@ -63,7 +60,7 @@ function HomePage() {
     setSortType('id');
   }, [search]);
 
-  if (loading) return <p className="text-center">Загрузка...</p>;
+  if (isLoading) return <p className="text-center">Загрузка...</p>;
   if (error) return <p className="text-center text-red-500">Ошибка: {error}</p>;
 
   return (
