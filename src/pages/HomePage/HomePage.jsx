@@ -4,6 +4,7 @@ import { useInput } from '@/shared/lib/dom/useInput'
 import { usePagination } from '@/features/post-list/model/usePagination';
 import AddPostForm from '@/features/add-post/ui/AddPostForm';
 import PostCard from '@/entities/post/ui/PostCard';
+import { usePosts } from '@/features/post-list/model/usePosts';
 
 function HomePage() {
   const { posts, loading, error, fetchPosts, addPost, deletePost, clearCache } = usePostStore();
