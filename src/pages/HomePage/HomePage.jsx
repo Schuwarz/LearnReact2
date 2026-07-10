@@ -5,13 +5,16 @@ import { usePagination } from '@/features/post-list/model/usePagination';
 import AddPostForm from '@/features/add-post/ui/AddPostForm';
 import PostCard from '@/entities/post/ui/PostCard';
 import { usePosts } from '@/features/post-list/model/usePosts';
+import { useAddPost, useDeletePost } from '@/features/post-list/model/usePostMutations'
 
 function HomePage() {
   const search = useInput('');
   const [sortType, setSortType] = useState('id');
   const searchInputRef = useRef(null);
-  const { addPost, deletePost, clearCache } = usePostStore();
-  const { data: posts = [], isLoading, error, isError } = usePosts();
+  const { clearCache } = usePostStore();
+  const addPost = useAddPost();
+  const deletePost = useDeletePost();
+  const { posts, isLoading, error, isError } = usePosts();
 
   const filteredPosts = useMemo(() => {
     return posts.filter((post) =>
@@ -42,11 +45,11 @@ function HomePage() {
   }, [isLoading]);
 
   const handlerDeletePost = useCallback((postId) => {
-    deletePost(postId);
+    deletePost.mutate(postId);
   }, [deletePost]);
 
   const handlerAddPost = useCallback((newPost) => {
-    addPost(newPost);
+    addPost.mutate(newPost);
     goToPage(1);
   }, [addPost]);
 
@@ -65,6 +68,7 @@ function HomePage() {
 
   return (
     <>
+      <img src="https://cdn.discordapp.com/emojis/997458646898315284.gif?v=1&size=48&quality=lossless" alt="sceleton funny" />
       <AddPostForm addPost={handlerAddPost} />
       <div className='bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6 space-y-3'>
         <input
