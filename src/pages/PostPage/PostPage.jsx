@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+
 import { usePostStore } from '@/shared/lib/store/postStore';
+
 import { fetchCommentsByPostId } from '@/entities/comment/model/commentApi'
 import CommentList from '@/entities/comment/ui/CommentList';
 import AddCommentForm from '@/features/add-comment/ui/AddCommentForm'
@@ -9,7 +11,9 @@ import { setItem, STORAGE_KEYS, getItem } from '@/shared/lib/storage';
 function PostPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const { getPostById, fetchPostById, deletePost, cacheVersion } = usePostStore();
+
   const [post, setPost] = useState(null);
   const [loadingPost, setLoadingPost] = useState(true);
   const [errorPost, setErrorPost] = useState(null);

@@ -5,22 +5,26 @@ import { POSTS_QUERY_KEY } from "./usePosts";
 
 export function useAddPost() {
   return useMutation({
-    mutationFn: (newPost) => {
-      instance.post('/posts', newPost).then((res) => res.data);
+    mutationFn: async (newPost) => {
+      const res = await instance.post('/posts', newPost);
+      return res.data;
+    },
+    onSuccess: (data, newPost) => {
       queryClient.setQueryData(POSTS_QUERY_KEY, (oldData) => [newPost, ...oldData]);
     },
-    onSuccess: () => console.log('Успех query'),
-    onError: () => console.log('Ошибка query'),
+    onError: () => console.log('Ошибка мутации query'),
   });
 }
 
 export function useDeletePost() {
   return useMutation({
-    mutationFn: (id) => {
-      instance.delete(`/posts/${id}`).then((res) => res.data);
+    mutationFn: async (id) => {
+      await instance.delete(`/posts/${id}`);
+      return id;
+    },
+    onSuccess: (id) => {
       queryClient.setQueryData(POSTS_QUERY_KEY, (oldData) => oldData.filter(post => post.id !== id))
     },
-    onSuccess: (data) => { },
-    onError: () => { },
+    onError: () => console.log('Ошибка мутации query'),
   });
 }

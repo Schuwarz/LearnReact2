@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { usePostStore } from '@/shared/lib/store/postStore';
 import { useInput } from '@/shared/lib/dom/useInput'
 import { usePagination } from '@/features/post-list/model/usePagination';
 import AddPostForm from '@/features/add-post/ui/AddPostForm';
@@ -11,7 +10,6 @@ function HomePage() {
   const search = useInput('');
   const [sortType, setSortType] = useState('id');
   const searchInputRef = useRef(null);
-  const { clearCache } = usePostStore();
   const addPost = useAddPost();
   const deletePost = useDeletePost();
   const { posts, isLoading, error, isError } = usePosts();
@@ -53,11 +51,6 @@ function HomePage() {
     goToPage(1);
   }, [addPost]);
 
-  const handlerClearCache = useCallback(() => {
-    clearCache();
-    alert('Кеш очищен');
-  }, [clearCache]);
-
   const handleReset = useCallback(() => {
     search.reset();
     setSortType('id');
@@ -97,12 +90,6 @@ function HomePage() {
             className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md transition"
           >
             Сброс
-          </button>
-          <button
-            onClick={handlerClearCache}
-            className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition"
-          >
-            Очистить кеш
           </button>
         </div>
       </div>
