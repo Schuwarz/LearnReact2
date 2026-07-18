@@ -57,7 +57,7 @@ function HomePage() {
   }, [search]);
 
   if (isLoading) return <p className="text-center">Загрузка...</p>;
-  if (error) return <p className="text-center text-red-500">Ошибка: {error}</p>;
+  if (isError) return <p className="text-center text-red-500">Ошибка: {error.message}</p>;
 
   return (
     <>

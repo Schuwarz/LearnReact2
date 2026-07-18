@@ -1,90 +1,49 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-
-import { usePostStore } from '@/shared/lib/store/postStore';
-
-import { fetchCommentsByPostId } from '@/entities/comment/model/commentApi'
 import CommentList from '@/entities/comment/ui/CommentList';
 import AddCommentForm from '@/features/add-comment/ui/AddCommentForm'
-import { setItem, STORAGE_KEYS, getItem } from '@/shared/lib/storage';
+import { fetchCommentsByPostId } from '@/entities/comment/model/commentApi'
+import { useComments } from '@/entities/comment/model/useComments';
+import { usePostById } from '@/features/post-details/model/usePostById';
+import { useAddComment, useDeleteComment } from '@/features/add-comment/model/useCommentMutation';
+import { useDeletePost } from '@/features/post-list/model/usePostMutations'
+
 
 function PostPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const postId = Number(id);
 
-  const { getPostById, fetchPostById, deletePost, cacheVersion } = usePostStore();
+  const { postById: post, isLoading: postIsLoading, error: postError, isError: postIsError } = usePostById(postId);
+  const { data: comments, isLoading: commentIsLoading, error: commentError, isError: commentIsError } = useComments(postId);
 
-  const [post, setPost] = useState(null);
-  const [loadingPost, setLoadingPost] = useState(true);
-  const [errorPost, setErrorPost] = useState(null);
-  const [comments, setComments] = useState([]);
-  const [loadingComments, setLoadingComments] = useState(false);
-  const [errorComments, setErrorComments] = useState(null);
+  const addCommentMutation = useAddComment(postId);
+  const deleteCommentMutation = useDeleteComment(postId);
+  const deletePostMutation = useDeletePost(postId);
+
   const [showComments, setShowComments] = useState(false);
-
-
-  useEffect(() => {
-    setComments([]);
-    setLoadingComments(true);
-
-    const loadPost = async () => {
-      try {
-        const data = getPostById(+id);
-        if (data) {
-          setPost(data);
-          setLoadingPost(false);
-          return;
-        }
-        const postData = await fetchPostById(+id);
-        setPost(postData);
-      } catch (err) {
-        setErrorPost(err.message);
-      } finally {
-        setLoadingPost(false);
-      }
-    };
-
-    const loadComment = async () => {
-      setLoadingComments(true);
-      try {
-        const data = await fetchCommentsByPostId(+id);
-        setComments(data);
-      } catch (err) {
-        setErrorComments(err.message);
-      } finally {
-        setLoadingComments(false);
-      }
-    };
-
-    loadPost();
-    loadComment();
-  }, [id, getPostById, cacheVersion]);
 
   const toggleComments = () => {
     setShowComments(prev => !prev);
   };
 
   const handlerAddComment = useCallback((newComment) => {
-    const updated = [...comments, newComment];
-    setComments(updated);
-    setItem(STORAGE_KEYS.COMMENTS_BY_POST(+id), updated);
-  }, [comments, id]);
+    addCommentMutation.mutate(newComment);
+  }, [addCommentMutation]);
 
   const handlerDeleteComment = useCallback((commentId) => {
-    const updated = comments.filter(c => c.id !== commentId);
-    setComments(updated);
-    setItem(STORAGE_KEYS.COMMENTS_BY_POST(+id), updated);
-  }, [comments, id]);
+    deleteCommentMutation.mutate(commentId);
+  }, [deleteCommentMutation]);
 
   const handlerDeletePost = useCallback(() => {
     if (window.confirm('Удалить этот пост?')) {
-      deletePost(+id);
+      deletePostMutation.mutate(postId);
       navigate('/');
     }
-  }, [deletePost, id, navigate]);
+  }, [deletePostMutation, postId, navigate]);
 
-  if (loadingPost) return <p className='text-center text-gray-500 dark:text-gray-400'>Загрузка...</p>;
-  if (errorPost) return <p className='text-center text-red-500'>Ошибка: {errorPost}</p>;
+  if (postIsLoading) return <p className='text-center text-gray-500 dark:text-gray-400'>Загрузка...</p>;
+  if (postIsError) return <p className='text-center text-red-500'>Ошибка: {postError.message}</p>;
   if (!post) return <p className='text-center text-gray-500 dark:text-gray-400'>Пост не найден</p>;
 
   return (
@@ -116,13 +75,13 @@ function PostPage() {
 
       {showComments && (
         <>
-          {loadingComments && (
+          {commentIsLoading && (
             <p className='text-gray-500 dark:text-gray-400 mt-4'>Загрузка комментариев...</p>
           )}
-          {errorComments && (
-            <p className='text-red-500 mt-4'>Ошибка комментариев: {errorComments}</p>
+          {commentIsError && (
+            <p className='text-red-500 mt-4'>Ошибка комментариев: {commentError.message}</p>
           )}
-          {!loadingComments && !errorComments && (
+          {!commentIsLoading && !commentIsError && (
             <>
               <CommentList comments={comments} onDeleteComment={handlerDeleteComment} />
               <AddCommentForm postId={id} onAddComment={handlerAddComment} />
