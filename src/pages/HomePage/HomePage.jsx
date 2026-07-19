@@ -61,7 +61,7 @@ function HomePage() {
 
   return (
     <>
-      <img src="https://cdn.discordapp.com/emojis/997458646898315284.gif?v=1&size=48&quality=lossless" alt="sceleton funny" />
+      <img className='flex m-auto' src="https://cdn.discordapp.com/emojis/997458646898315284.gif?v=1&size=48&quality=lossless" alt="sceleton funny" />
       <AddPostForm addPost={handlerAddPost} />
       <div className='bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6 space-y-3'>
         <input
