@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 function AddPostForm({ addPost }) {
   const [newTitle, setNewTitle] = useState('');
