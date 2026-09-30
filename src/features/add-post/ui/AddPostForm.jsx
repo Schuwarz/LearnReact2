@@ -2,46 +2,42 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 function AddPostForm({ addPost }) {
-  const [newTitle, setNewTitle] = useState('');
-  const [newBody, setNewBody] = useState('');
+
+  const { register, handleSubmit, reset } = useForm();
   const [postAdded, setPostAdded] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!newTitle.trim() || !newBody.trim()) {
+  const onSubmit = (data) => {
+    if (!data.title.trim() || !data.body.trim()) {
       alert('Заполните все поля!');
       return;
     }
 
     const newPost = {
       id: Date.now(),  // Сдесь генерим уникальный ID
-      title: newTitle,
-      body: newBody,
+      title: data.title,
+      body: data.body,
     };
 
     addPost(newPost);
-    setNewTitle('');
-    setNewBody('');
+    reset();
     setPostAdded(true);
     setTimeout(() => setPostAdded(false), 2000);
+
   };
 
   return (
     <div>
       {postAdded && <p>Пост Добавлен!</p>}
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6 space-y-3">
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6 space-y-3">
         <input
           type="text"
           placeholder='Заголовок'
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
+          {...register('title')}
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
         />
         <textarea
           placeholder='Текст'
-          value={newBody}
-          onChange={(e) => setNewBody(e.target.value)}
+          {...register('body')}
           rows={3}
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
         />
@@ -54,7 +50,7 @@ function AddPostForm({ addPost }) {
           </button>
           <button
             type="button"
-            onClick={() => { setNewTitle(''); setNewBody(''); }}
+            onClick={() => reset()}
             className="px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 rounded-md transition"
           >
             Очистить форму
