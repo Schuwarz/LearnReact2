@@ -27,6 +27,8 @@ function Modal({ isOpen, children, onClose }) {
       onClick={onClose}
     >
       <div
+        role="dialog"
+        aria-modal="true"
         className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm w-full mx-4"
         onClick={(e) => e.stopPropagation()}
       >
