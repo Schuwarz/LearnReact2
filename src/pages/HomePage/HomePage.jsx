@@ -10,8 +10,8 @@ function HomePage() {
   const search = useInput('');
   const [sortType, setSortType] = useState('id');
   const searchInputRef = useRef(null);
-  const addPost = useAddPost();
-  const deletePost = useDeletePost();
+  const { mutate: addPostMutate } = useAddPost();
+  const { mutate: deletePostMutate } = useDeletePost();
   const { posts, isLoading, error, isError } = usePosts();
 
   const filteredPosts = useMemo(() => {
@@ -41,20 +41,19 @@ function HomePage() {
       searchInputRef.current?.focus();
     }
   }, [isLoading]);
+    const handlerDeletePost = useCallback((postId) => {
+    deletePostMutate(postId);
+  }, [deletePostMutate]);
 
-  const handlerDeletePost = useCallback((postId) => {
-    deletePost.mutate(postId);
-  }, [deletePost]);
-
-  const handlerAddPost = useCallback((newPost) => {
-    addPost.mutate(newPost);
+  const handlerAddPost = (newPost) => {
+    addPostMutate(newPost);
     goToPage(1);
-  }, [addPost]);
+  };
 
-  const handleReset = useCallback(() => {
+  const handleReset = () => {
     search.reset();
     setSortType('id');
-  }, [search]);
+  };
 
   if (isLoading) return <p className="text-center">Загрузка...</p>;
   if (isError) return <p className="text-center text-red-500">Ошибка: {error.message}</p>;
