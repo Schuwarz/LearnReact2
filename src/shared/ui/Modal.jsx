@@ -40,3 +40,5 @@ function Modal({ isOpen, children, onClose }) {
 }
 
 export default Modal;
+
+// баг фикс
