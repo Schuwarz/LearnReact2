@@ -52,4 +52,4 @@ function PostCard({ post, onDelete }) {
 
 export default memo(PostCard);
 
-// рефакторинг
+// рефакторинг, тоже изменение
